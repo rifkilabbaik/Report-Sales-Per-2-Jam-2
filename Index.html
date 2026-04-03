@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- PWA META -->
+  <meta name="theme-color" content="#007bff">
+  <link rel="manifest" href="manifest.json">
+
+  <title>Report Sales 2 Jam</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background:#f5f5f5; }
+    .container { background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);} 
+    input, textarea { width:100%; padding:10px; margin:5px 0; border-radius:6px; border:1px solid #ccc; }
+    button { padding:10px 15px; margin:5px 5px 0 0; border:none; border-radius:6px; cursor:pointer; }
+    .btn-primary { background:#007bff; color:#fff; }
+    .btn-danger { background:#dc3545; color:#fff; }
+    .btn-success { background:#28a745; color:#fff; }
+    .result { margin-top:15px; padding:10px; background:#eef; border-radius:6px; }
+
+    .dropdown-list { border:1px solid #ccc; border-radius:6px; max-height:200px; overflow-y:auto; display:none; background:#fff; }
+    .dropdown-item { padding:10px; cursor:pointer; }
+    .dropdown-item:hover { background:#007bff; color:#fff; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Report Sales per 2 Jam</h2>
+
+  <label>Nama Toko</label>
+  <input type="text" id="toko" placeholder="Ketik untuk cari toko..." onfocus="showDropdown()" oninput="filterToko()">
+  <div id="dropdown" class="dropdown-list"></div>
+
+  <datalist id="listToko">
+    <option value="LC Cipasir"><option value="LC Cileunyi"><option value="LC Pandanwangi"><option value="LC Jatos"><option value="LC Simpang Lima"><option value="LC Cimanuk"><option value="LC Cikajang"><option value="LC Indihiang"><option value="LC Siliwangi Tasik"><option value="LC Singaparna"><option value="LC Bulak Laut"><option value="LC Permata Cimahi"><option value="LC Cihampelas"><option value="LC Margaasih"><option value="LC Katapang"><option value="LC Gading Tutuka"><option value="LC Al Fathu"><option value="LC Ciwidey"><option value="LC Sukamenak"><option value="LC Rancamanyar"><option value="LC Baleendah"><option value="LC Bojongsoang"><option value="LC Antapani"><option value="LC Babakan Sari"><option value="LC Derwati"><option value="LC Gegerkalong"><option value="LC Batununggal"><option value="LC Sukagalih"><option value="LC Sarimanah"><option value="LC Tubagus Ismail"><option value="LC Ujung Berung"><option value="LC Margahayu"><option value="LC Banteng"><option value="LC Cibaraja"><option value="LC Palabuhan Ratu"><option value="LC Caringin"><option value="LC Cidahu"><option value="LC Cimanggu"><option value="LC Cibinong"><option value="LC Cagar Alam"><option value="LC Galuhmas"><option value="LC Ahmad Yani"><option value="LC Munjul"><option value="LC Mega Regency"><option value="LC Perumnas Cirebon"><option value="LC Perjuangan"><option value="LC Sumber"><option value="LC Sudirman Indramayu"><option value="LC Tegal"><option value="LC Majalengka"><option value="LC Angkrek"><option value="LC Weru"><option value="LC Bukit Barisan"><option value="LC Rumbai"><option value="LC Panam Simpang Satria"><option value="LC Bhayangkara"><option value="LC Lopang"><option value="LC Cipocok"><option value="LC Ciwaru"><option value="LC Kaligandu"><option value="LC Pakupatan"><option value="LC Ciruas"><option value="LC Pipitan"><option value="LC Kragilan"><option value="LC Cikande"><option value="LC Kasemen"><option value="LC Ciracas"><option value="LC Legok"><option value="LC Kelapa Dua"><option value="LC Baros"><option value="LC Petir"><option value="LC Warung Gunung"><option value="LC Multatuli"><option value="LC Juanda"><option value="LC Ona Siliwangi"><option value="LC Gardu Tanjak"><option value="LC Majasari"><option value="LC Pci"><option value="LC Taman Cilegon Indah"><option value="LC Cibeber"><option value="LC Kalitimbang"><option value="LC Serdang"><option value="LC Waringin"><option value="LC Lebak Indah"><option value="LC Seneja"><option value="LC Anyer"><option value="LC Bbs"><option value="LC Kramatwatu"><option value="LC Warnasari"><option value="LC Krenceng"><option value="LC Kebon Dalem"><option value="LC Jombang"><option value="LC Bojonegara"><option value="LC Merak"><option value="LC Grogol"><option value="LC Temu Putih"><option value="LC Tegal Cabe"><option value="LC Menes"><option value="LC Labuan"><option value="LC Panimbang">
+  </datalist>
+
+  <label>Jumlah Crew</label>
+  <input type="number" id="crew">
+
+  <label>Sales Sebelumnya</label>
+  <input type="text" id="salesSebelumnya" oninput="formatAngka(this); hitungSales()">
+
+  <label>Sales Total</label>
+  <input type="text" id="salesTotal" oninput="formatAngka(this); hitungSales()">
+
+  <label>Sales 2 Jam</label>
+  <input type="text" id="sales2jam" readonly>
+
+  <button class="btn-primary" onclick="copyReport()">Copy Report</button>
+  <button class="btn-success" onclick="shareTelegram()">Share Telegram</button>
+  <button class="btn-danger" onclick="resetForm()">Reset</button>
+
+  <div class="result" id="output"></div>
+
+  <textarea id="fallback" style="position:absolute; left:-9999px;"></textarea>
+</div>
+
+<script>
+// REGISTER SERVICE WORKER
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+
+const tokoList = Array.from(document.querySelectorAll('#listToko option')).map(o => o.value);
+
+function showDropdown() { renderList(tokoList); }
+function filterToko() {
+  const keyword = toko.value.toLowerCase();
+  renderList(tokoList.filter(t => t.toLowerCase().includes(keyword)));
+}
+function renderList(list) {
+  dropdown.innerHTML = '';
+  list.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'dropdown-item';
+    div.innerText = item;
+    div.onclick = () => { toko.value = item; dropdown.style.display = 'none'; };
+    dropdown.appendChild(div);
+  });
+  dropdown.style.display = list.length ? 'block' : 'none';
+}
+window.addEventListener('click', e => { if (!e.target.matches('#toko')) dropdown.style.display='none'; });
+
+function getTanggalJam() {
+  const now = new Date();
+  return { tanggal: now.toLocaleDateString('id-ID'), jam: now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) };
+}
+
+function formatAngka(input) {
+  let angka = input.value.replace(/[^0-9]/g, '');
+  input.value = angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+function getAngka(v){ return parseFloat(v.replace(/\./g,''))||0; }
+function formatRupiah(a){ return 'Rp. '+a.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.')+',-'; }
+
+function hitungSales(){
+  const hasil = getAngka(salesTotal.value)-getAngka(salesSebelumnya.value);
+  sales2jam.value = formatRupiah(hasil>=0?hasil:0);
+}
+
+function generateText(){
+  const w = getTanggalJam();
+  return `REPORT SALES 2 JAM\n\nNama Toko: ${toko.value}\nTanggal: ${w.tanggal}\nJam: ${w.jam}\nJumlah Crew: ${crew.value}\nSales Sebelumnya: Rp. ${salesSebelumnya.value},-\nSales 2 Jam: ${sales2jam.value}\nSales Total: Rp. ${salesTotal.value},-`;
+}
+
+function copyReport(){
+  const t=generateText();
+  navigator.clipboard?.writeText(t).catch(()=>fallbackCopy(t))||fallbackCopy(t);
+}
+function fallbackCopy(t){ fallback.value=t; fallback.select(); document.execCommand('copy'); }
+
+function shareTelegram(){
+  const text=encodeURIComponent(generateText());
+  location.href=`tg://msg?text=${text}`;
+}
+
+function resetForm(){ document.querySelectorAll('input').forEach(i=>i.value=''); }
+
+console.assert(getAngka('1.000')===1000);
+</script>
+
+</body>
+</html>
