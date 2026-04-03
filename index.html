@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- PWA META -->
   <meta name="theme-color" content="#007bff">
   <link rel="manifest" href="manifest.json">
 
@@ -17,7 +16,6 @@
     .btn-primary { background:#007bff; color:#fff; }
     .btn-danger { background:#dc3545; color:#fff; }
     .btn-success { background:#28a745; color:#fff; }
-    .result { margin-top:15px; padding:10px; background:#eef; border-radius:6px; }
 
     .dropdown-list { border:1px solid #ccc; border-radius:6px; max-height:200px; overflow-y:auto; display:none; background:#fff; }
     .dropdown-item { padding:10px; cursor:pointer; }
@@ -41,7 +39,7 @@
   <input type="number" id="crew">
 
   <label>Sales Sebelumnya</label>
-  <input type="text" id="salesSebelumnya" oninput="formatAngka(this); hitungSales()">
+  <input type="text" id="salesSebelumnya" oninput="formatAngka(this); hitungSales(); saveSales()">
 
   <label>Sales Total</label>
   <input type="text" id="salesTotal" oninput="formatAngka(this); hitungSales()">
@@ -50,60 +48,75 @@
   <input type="text" id="sales2jam" readonly>
 
   <button class="btn-primary" onclick="copyReport()">Copy Report</button>
+  <button class="btn-success" onclick="nextReport()">Next Report</button>
   <button class="btn-success" onclick="shareTelegram()">Share Telegram</button>
   <button class="btn-danger" onclick="resetForm()">Reset</button>
-
-  <div class="result" id="output"></div>
 
   <textarea id="fallback" style="position:absolute; left:-9999px;"></textarea>
 </div>
 
 <script>
-// REGISTER SERVICE WORKER
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
-
+const tokoInput = document.getElementById('toko');
+const dropdown = document.getElementById('dropdown');
 const tokoList = Array.from(document.querySelectorAll('#listToko option')).map(o => o.value);
 
-function showDropdown() { renderList(tokoList); }
-function filterToko() {
-  const keyword = toko.value.toLowerCase();
-  renderList(tokoList.filter(t => t.toLowerCase().includes(keyword)));
+window.onload = () => {
+  const lastToko = localStorage.getItem('lastToko');
+  const lastSales = localStorage.getItem('lastSales');
+  if (lastToko) tokoInput.value = lastToko;
+  if (lastSales) salesSebelumnya.value = lastSales;
+};
+
+function saveSales(){
+  localStorage.setItem('lastSales', salesSebelumnya.value);
 }
-function renderList(list) {
-  dropdown.innerHTML = '';
-  list.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'dropdown-item';
-    div.innerText = item;
-    div.onclick = () => { toko.value = item; dropdown.style.display = 'none'; };
+
+tokoInput.addEventListener('blur', () => {
+  if (tokoInput.value) localStorage.setItem('lastToko', tokoInput.value);
+});
+
+function showDropdown(){ renderList(tokoList); }
+function filterToko(){ renderList(tokoList.filter(t => t.toLowerCase().includes(tokoInput.value.toLowerCase()))); }
+function renderList(list){
+  dropdown.innerHTML='';
+  list.forEach(item=>{
+    const div=document.createElement('div');
+    div.className='dropdown-item';
+    div.innerText=item;
+    div.onclick=()=>{
+      tokoInput.value=item;
+      localStorage.setItem('lastToko', item);
+      dropdown.style.display='none';
+    };
     dropdown.appendChild(div);
   });
-  dropdown.style.display = list.length ? 'block' : 'none';
+  dropdown.style.display=list.length?'block':'none';
 }
-window.addEventListener('click', e => { if (!e.target.matches('#toko')) dropdown.style.display='none'; });
+window.addEventListener('click',e=>{ if(!e.target.matches('#toko')) dropdown.style.display='none'; });
 
-function getTanggalJam() {
-  const now = new Date();
-  return { tanggal: now.toLocaleDateString('id-ID'), jam: now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) };
+function getTanggalJam(){
+  const now=new Date();
+  return {
+    tanggal: now.toLocaleDateString('id-ID',{weekday:'long', day:'numeric', month:'long', year:'numeric'}),
+    jam: now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})
+  };
 }
 
-function formatAngka(input) {
-  let angka = input.value.replace(/[^0-9]/g, '');
-  input.value = angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+function formatAngka(input){
+  let angka=input.value.replace(/[^0-9]/g,'');
+  input.value=angka.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 }
 function getAngka(v){ return parseFloat(v.replace(/\./g,''))||0; }
 function formatRupiah(a){ return 'Rp. '+a.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.')+',-'; }
 
 function hitungSales(){
-  const hasil = getAngka(salesTotal.value)-getAngka(salesSebelumnya.value);
-  sales2jam.value = formatRupiah(hasil>=0?hasil:0);
+  const hasil=getAngka(salesTotal.value)-getAngka(salesSebelumnya.value);
+  sales2jam.value=formatRupiah(hasil>=0?hasil:0);
 }
 
 function generateText(){
-  const w = getTanggalJam();
-  return `REPORT SALES 2 JAM\n\nNama Toko: ${toko.value}\nTanggal: ${w.tanggal}\nJam: ${w.jam}\nJumlah Crew: ${crew.value}\nSales Sebelumnya: Rp. ${salesSebelumnya.value},-\nSales 2 Jam: ${sales2jam.value}\nSales Total: Rp. ${salesTotal.value},-`;
+  const w=getTanggalJam();
+  return `ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ\nبِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n\nREPORT SALES PER 2 JAM\n\nNama toko: ${tokoInput.value}\nTanggal: ${w.tanggal}\nJam: ${w.jam}\nJumlah crew: ${crew.value}\nSales sebelumnya: Rp. ${salesSebelumnya.value},-\nSales per 2 jam: ${sales2jam.value}\nSales total: Rp. ${salesTotal.value},-\n\nSyukran 🙏`;
 }
 
 function copyReport(){
@@ -118,6 +131,15 @@ function shareTelegram(){
 }
 
 function resetForm(){ document.querySelectorAll('input').forEach(i=>i.value=''); }
+
+function nextReport(){
+  if(salesTotal.value){
+    salesSebelumnya.value = salesTotal.value;
+    localStorage.setItem('lastSales', salesTotal.value);
+    salesTotal.value = '';
+    sales2jam.value = '';
+  }
+}
 
 console.assert(getAngka('1.000')===1000);
 </script>
