@@ -29,12 +29,19 @@
     }
     button {
       padding:12px;
-      margin:5px 5px 0 0;
+      margin:5px 0;
       border:none;
       border-radius:8px;
       cursor:pointer;
-      width:48%;
+      width:100%;
       font-size:14px;
+    }
+
+    .btn-group {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
     }
     .btn-primary { background:#007bff; color:#fff; }
     .btn-danger { background:#dc3545; color:#fff; }
@@ -70,10 +77,12 @@
   <label>Sales 2 Jam</label>
   <input type="text" id="sales2jam" readonly>
 
-  <button class="btn-primary" onclick="copyReport()">Copy Report</button>
-  <button class="btn-success" onclick="nextReport()">Next Report</button>
-  <button class="btn-success" onclick="shareTelegram()">Share Telegram</button>
-  <button class="btn-danger" onclick="resetForm()">Reset</button>
+  <div class="btn-group">
+    <button class="btn-primary" onclick="copyReport()">Copy Report</button>
+    <button class="btn-success" onclick="nextReport()">Next Report</button>
+    <button class="btn-success" onclick="shareTelegram()">Share Telegram</button>
+    <button class="btn-danger" onclick="resetForm()">Reset</button>
+  </div>
 
   <textarea id="fallback" style="position:absolute; left:-9999px;"></textarea>
 </div>
