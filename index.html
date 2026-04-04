@@ -3,53 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <meta name="theme-color" content="#007bff">
-  <link rel="manifest" href="manifest.json">
-
   <title>Report Sales 2 Jam</title>
   <style>
     body { font-family: Arial; padding: 20px; background:#f5f5f5; }
-    .container {
-      background:#fff;
-      padding:20px;
-      border-radius:16px;
-      box-shadow:0 2px 10px rgba(0,0,0,0.1);
-      max-width:400px;
-      margin:auto;
-    } 
-    input, textarea {
-      width:100%;
-      padding:12px;
-      margin:8px 0 16px 0;
-      border-radius:8px;
-      border:1px solid #ccc;
-      box-sizing:border-box;
-      font-size:16px;
-    }
-    button {
-      padding:12px;
-      margin:5px 0;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      width:100%;
-      font-size:14px;
-    }
-
-    .btn-group {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:10px;
-    }
+    .container { background:#fff; padding:20px; border-radius:16px; box-shadow:0 2px 10px rgba(0,0,0,0.1); max-width:420px; margin:auto; }
+    input { width:100%; padding:12px; margin:8px 0 16px 0; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; font-size:16px; }
+    button { padding:12px; border:none; border-radius:8px; cursor:pointer; width:100%; }
     .btn-primary { background:#007bff; color:#fff; }
-    .btn-danger { background:#dc3545; color:#fff; }
     .btn-success { background:#28a745; color:#fff; }
+    .btn-danger { background:#dc3545; color:#fff; }
+    .btn-group { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  
+    /* Improve layout when keyboard opens */
+    html, body { height: 100%; }
+    body { overflow-x: hidden; }
+    .container { min-height: 100dvh; }
 
-    .dropdown-list { border:1px solid #ccc; border-radius:6px; max-height:200px; overflow-y:auto; display:none; background:#fff; }
-    .dropdown-item { padding:10px; cursor:pointer; }
-    .dropdown-item:hover { background:#007bff; color:#fff; }
+    /* Ensure inputs are visible above keyboard */
+    input:focus {
+      scroll-margin-bottom: 120px; /* space for keyboard */
+    }
   </style>
 </head>
 <body>
@@ -58,24 +32,25 @@
   <h2>Report Sales per 2 Jam</h2>
 
   <label>Nama Toko</label>
-  <input type="text" id="toko" placeholder="Ketik untuk cari toko..." onfocus="showDropdown()" oninput="filterToko()">
-  <div id="dropdown" class="dropdown-list"></div>
-
-  <datalist id="listToko">
-    <option value="LC Cipasir"><option value="LC Cileunyi"><option value="LC Pandanwangi"><option value="LC Jatos"><option value="LC Simpang Lima"><option value="LC Cimanuk"><option value="LC Cikajang"><option value="LC Indihiang"><option value="LC Siliwangi Tasik"><option value="LC Singaparna"><option value="LC Bulak Laut"><option value="LC Permata Cimahi"><option value="LC Cihampelas"><option value="LC Margaasih"><option value="LC Katapang"><option value="LC Gading Tutuka"><option value="LC Al Fathu"><option value="LC Ciwidey"><option value="LC Sukamenak"><option value="LC Rancamanyar"><option value="LC Baleendah"><option value="LC Bojongsoang"><option value="LC Antapani"><option value="LC Babakan Sari"><option value="LC Derwati"><option value="LC Gegerkalong"><option value="LC Batununggal"><option value="LC Sukagalih"><option value="LC Sarimanah"><option value="LC Tubagus Ismail"><option value="LC Ujung Berung"><option value="LC Margahayu"><option value="LC Banteng"><option value="LC Cibaraja"><option value="LC Palabuhan Ratu"><option value="LC Caringin"><option value="LC Cidahu"><option value="LC Cimanggu"><option value="LC Cibinong"><option value="LC Cagar Alam"><option value="LC Galuhmas"><option value="LC Ahmad Yani"><option value="LC Munjul"><option value="LC Mega Regency"><option value="LC Perumnas Cirebon"><option value="LC Perjuangan"><option value="LC Sumber"><option value="LC Sudirman Indramayu"><option value="LC Tegal"><option value="LC Majalengka"><option value="LC Angkrek"><option value="LC Weru"><option value="LC Bukit Barisan"><option value="LC Rumbai"><option value="LC Panam Simpang Satria"><option value="LC Bhayangkara"><option value="LC Lopang"><option value="LC Cipocok"><option value="LC Ciwaru"><option value="LC Kaligandu"><option value="LC Pakupatan"><option value="LC Ciruas"><option value="LC Pipitan"><option value="LC Kragilan"><option value="LC Cikande"><option value="LC Kasemen"><option value="LC Ciracas"><option value="LC Legok"><option value="LC Kelapa Dua"><option value="LC Baros"><option value="LC Petir"><option value="LC Warung Gunung"><option value="LC Multatuli"><option value="LC Juanda"><option value="LC Ona Siliwangi"><option value="LC Gardu Tanjak"><option value="LC Majasari"><option value="LC Pci"><option value="LC Taman Cilegon Indah"><option value="LC Cibeber"><option value="LC Kalitimbang"><option value="LC Serdang"><option value="LC Waringin"><option value="LC Lebak Indah"><option value="LC Seneja"><option value="LC Anyer"><option value="LC Bbs"><option value="LC Kramatwatu"><option value="LC Warnasari"><option value="LC Krenceng"><option value="LC Kebon Dalem"><option value="LC Jombang"><option value="LC Bojonegara"><option value="LC Merak"><option value="LC Grogol"><option value="LC Temu Putih"><option value="LC Tegal Cabe"><option value="LC Menes"><option value="LC Labuan"><option value="LC Panimbang">
-  </datalist>
+  <input type="text" id="toko">
 
   <label>Jumlah Crew</label>
   <input type="number" id="crew">
 
   <label>Sales Sebelumnya</label>
-  <input type="text" id="salesSebelumnya" oninput="formatAngka(this); hitungSales(); saveSales()">
+  <input type="text" id="salesSebelumnya" oninput="formatAngka(this); hitungSales()">
 
   <label>Sales Total</label>
   <input type="text" id="salesTotal" oninput="formatAngka(this); hitungSales()">
 
   <label>Sales 2 Jam</label>
   <input type="text" id="sales2jam" readonly>
+
+  <label>CU</label>
+  <input type="number" id="cu">
+
+  <label>Average</label>
+  <input type="text" id="avg" oninput="formatAngka(this)">
 
   <div class="btn-group">
     <button class="btn-primary" onclick="copyReport()">Copy Report</button>
@@ -88,44 +63,6 @@
 </div>
 
 <script>
-const tokoInput = document.getElementById('toko');
-const dropdown = document.getElementById('dropdown');
-const tokoList = Array.from(document.querySelectorAll('#listToko option')).map(o => o.value);
-
-window.onload = () => {
-  const lastToko = localStorage.getItem('lastToko');
-  const lastSales = localStorage.getItem('lastSales');
-  if (lastToko) tokoInput.value = lastToko;
-  if (lastSales) salesSebelumnya.value = lastSales;
-};
-
-function saveSales(){
-  localStorage.setItem('lastSales', salesSebelumnya.value);
-}
-
-tokoInput.addEventListener('blur', () => {
-  if (tokoInput.value) localStorage.setItem('lastToko', tokoInput.value);
-});
-
-function showDropdown(){ renderList(tokoList); }
-function filterToko(){ renderList(tokoList.filter(t => t.toLowerCase().includes(tokoInput.value.toLowerCase()))); }
-function renderList(list){
-  dropdown.innerHTML='';
-  list.forEach(item=>{
-    const div=document.createElement('div');
-    div.className='dropdown-item';
-    div.innerText=item;
-    div.onclick=()=>{
-      tokoInput.value=item;
-      localStorage.setItem('lastToko', item);
-      dropdown.style.display='none';
-    };
-    dropdown.appendChild(div);
-  });
-  dropdown.style.display=list.length?'block':'none';
-}
-window.addEventListener('click',e=>{ if(!e.target.matches('#toko')) dropdown.style.display='none'; });
-
 function getTanggalJam(){
   const now=new Date();
   return {
@@ -138,7 +75,8 @@ function formatAngka(input){
   let angka=input.value.replace(/[^0-9]/g,'');
   input.value=angka.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 }
-function getAngka(v){ return parseFloat(v.replace(/\./g,''))||0; }
+
+function getAngka(v){ return parseFloat((v||'').replace(/\./g,''))||0; }
 function formatRupiah(a){ return 'Rp. '+a.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.')+',-'; }
 
 function hitungSales(){
@@ -146,34 +84,92 @@ function hitungSales(){
   sales2jam.value=formatRupiah(hasil>=0?hasil:0);
 }
 
+// FIXED (no backtick)
 function generateText(){
   const w=getTanggalJam();
-  return `ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ\nبِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n\nREPORT SALES PER 2 JAM\n\nNama toko: ${tokoInput.value}\nTanggal: ${w.tanggal}\nJam: ${w.jam}\nJumlah crew: ${crew.value}\nSales sebelumnya: Rp. ${salesSebelumnya.value},-\nSales per 2 jam: ${sales2jam.value}\nSales total: Rp. ${salesTotal.value},-\n\nSyukran 🙏`;
+  let t="";
+  t+="ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ\n";
+  t+="بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n\n";
+  t+="REPORT SALES PER 2 JAM\n\n";
+  t+="Nama toko: "+toko.value+"\n";
+  t+="Tanggal: "+w.tanggal+"\n";
+  t+="Jam: "+w.jam+"\n";
+  t+="Jumlah crew: "+crew.value+"\n";
+  t+="Sales sebelumnya: Rp. "+salesSebelumnya.value+",-\n";
+  t+="Sales per 2 jam: "+sales2jam.value+"\n";
+  t+="Sales total: Rp. "+salesTotal.value+",-\n";
+  t+="CU: "+cu.value+"\n";
+  t+="Average: Rp. "+avg.value+",-\n\n";
+  t+="Syukran 🙏";
+  return t;
 }
 
 function copyReport(){
   const t=generateText();
-  navigator.clipboard?.writeText(t).catch(()=>fallbackCopy(t))||fallbackCopy(t);
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(t).catch(()=>fallbackCopy(t));
+  } else fallbackCopy(t);
 }
-function fallbackCopy(t){ fallback.value=t; fallback.select(); document.execCommand('copy'); }
+
+function fallbackCopy(t){
+  fallback.value=t;
+  fallback.select();
+  document.execCommand('copy');
+}
 
 function shareTelegram(){
   const text=encodeURIComponent(generateText());
-  location.href=`tg://msg?text=${text}`;
+  location.href="tg://msg?text="+text;
 }
-
-function resetForm(){ document.querySelectorAll('input').forEach(i=>i.value=''); }
 
 function nextReport(){
   if(salesTotal.value){
-    salesSebelumnya.value = salesTotal.value;
-    localStorage.setItem('lastSales', salesTotal.value);
-    salesTotal.value = '';
-    sales2jam.value = '';
+    salesSebelumnya.value=salesTotal.value;
+    salesTotal.value='';
+    sales2jam.value='';
+    cu.value='';
+    avg.value='';
   }
 }
 
+function resetForm(){
+  document.querySelectorAll('input').forEach(i=>i.value='');
+}
+
+// TEST
 console.assert(getAngka('1.000')===1000);
+
+
+// === HANDLE KEYBOARD (mobile) ===
+(function(){
+  if (window.visualViewport) {
+    const vv = window.visualViewport;
+    const container = document.querySelector('.container');
+
+    function adjust() {
+      const keyboardHeight = window.innerHeight - vv.height;
+      if (keyboardHeight > 0) {
+        container.style.paddingBottom = keyboardHeight + 20 + 'px';
+      } else {
+        container.style.paddingBottom = '20px';
+      }
+    }
+
+    vv.addEventListener('resize', adjust);
+    vv.addEventListener('scroll', adjust);
+  }
+})();
+
+// Auto scroll input into view
+const inputs = document.querySelectorAll('input');
+inputs.forEach(input => {
+  input.addEventListener('focus', () => {
+    setTimeout(() => {
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
+  });
+});
+
 </script>
 
 </body>
