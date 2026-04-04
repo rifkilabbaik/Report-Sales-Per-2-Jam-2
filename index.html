@@ -79,6 +79,12 @@
 
 <script>
 const tokoInput = document.getElementById('toko');
+const crew = document.getElementById('crew');
+const salesSebelumnya = document.getElementById('salesSebelumnya');
+const salesTotal = document.getElementById('salesTotal');
+const sales2jam = document.getElementById('sales2jam');
+const cu = document.getElementById('cu');
+const avg = document.getElementById('avg');
 const dropdown = document.getElementById('dropdown');
 const tokoList = Array.from(document.querySelectorAll('#listToko option')).map(o => o.value);
 
@@ -179,6 +185,24 @@ function nextReport(){
 function resetForm(){
   document.querySelectorAll('input').forEach(i=>i.value='');
 }
+
+// === AUTO SAVE LOCAL STORAGE ===
+const fields = [tokoInput, crew, salesSebelumnya, salesTotal, cu, avg];
+
+fields.forEach(field => {
+  field.addEventListener('input', () => {
+    localStorage.setItem(field.id, field.value);
+  });
+});
+
+// LOAD DATA SAAT BUKA
+window.addEventListener('load', () => {
+  fields.forEach(field => {
+    const saved = localStorage.getItem(field.id);
+    if (saved) field.value = saved;
+  });
+  hitungSales();
+});
 
 // TEST
 console.assert(getAngka('1.000')===1000);
