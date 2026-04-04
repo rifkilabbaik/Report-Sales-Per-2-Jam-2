@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#007bff">
+  <link rel="manifest" href="manifest.json">
   <title>Report Sales 2 Jam</title>
   <style>
     body { font-family: Arial; padding: 20px; background:#f5f5f5; }
@@ -182,6 +183,14 @@ function resetForm(){
 // TEST
 console.assert(getAngka('1.000')===1000);
 console.assert(getAngka('')===0);
+
+// REGISTER SERVICE WORKER (PWA)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW gagal:', err));
+  });
+}
+
 </script>
 
 </body>
