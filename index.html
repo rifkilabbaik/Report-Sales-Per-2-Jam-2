@@ -86,6 +86,7 @@ const sales2jam = document.getElementById('sales2jam');
 const cu = document.getElementById('cu');
 const avg = document.getElementById('avg');
 const dropdown = document.getElementById('dropdown');
+const fallback = document.getElementById('fallback');
 const tokoList = Array.from(document.querySelectorAll('#listToko option')).map(o => o.value);
 
 function showDropdown(){ renderList(tokoList); }
@@ -141,7 +142,7 @@ function generateText(){
   t+="ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ\n";
   t+="بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n\n";
   t+="REPORT SALES PER 2 JAM\n\n";
-  t+="Nama toko: "+toko.value+"\n";
+  t+="Nama toko: "+tokoInput.value+"\n";
   t+="Tanggal: "+w.tanggal+"\n";
   t+="Jam: "+w.jam+"\n";
   t+="Jumlah crew: "+crew.value+"\n";
@@ -157,8 +158,13 @@ function generateText(){
 function copyReport(){
   const t=generateText();
   if(navigator.clipboard){
-    navigator.clipboard.writeText(t).catch(()=>fallbackCopy(t));
-  } else fallbackCopy(t);
+    navigator.clipboard.writeText(t).then(()=>{
+      alert('Berhasil di copy');
+    }).catch(()=>fallbackCopy(t));
+  } else {
+    fallbackCopy(t);
+    alert('Berhasil di copy');
+  }
 }
 
 function fallbackCopy(t){
@@ -179,23 +185,33 @@ function nextReport(){
     sales2jam.value='';
     cu.value='';
     avg.value='';
+
+    localStorage.setItem('salesSebelumnya', salesSebelumnya.value);
+    localStorage.setItem('salesTotal', '');
+    localStorage.setItem('cu', '');
+    localStorage.setItem('avg', '');
+
+    alert('Report selanjutnya');
   }
 }
 
 function resetForm(){
-  document.querySelectorAll('input').forEach(i=>i.value='');
+  const confirmReset = confirm('Yakin ingin menghapus semua data?');
+  if(confirmReset){
+    document.querySelectorAll('input').forEach(i=>i.value='');
+    localStorage.clear();
+    alert('Berhasil di hapus');
+  }
 }
 
-// === AUTO SAVE LOCAL STORAGE ===
+// AUTO SAVE
 const fields = [tokoInput, crew, salesSebelumnya, salesTotal, cu, avg];
-
 fields.forEach(field => {
   field.addEventListener('input', () => {
     localStorage.setItem(field.id, field.value);
   });
 });
 
-// LOAD DATA SAAT BUKA
 window.addEventListener('load', () => {
   fields.forEach(field => {
     const saved = localStorage.getItem(field.id);
@@ -208,10 +224,10 @@ window.addEventListener('load', () => {
 console.assert(getAngka('1.000')===1000);
 console.assert(getAngka('')===0);
 
-// REGISTER SERVICE WORKER (PWA)
+// SERVICE WORKER
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW gagal:', err));
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
   });
 }
 
@@ -219,3 +235,4 @@ if ('serviceWorker' in navigator) {
 
 </body>
 </html>
+
