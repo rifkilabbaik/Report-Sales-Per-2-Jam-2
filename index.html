@@ -14,16 +14,6 @@
     .btn-success { background:#28a745; color:#fff; }
     .btn-danger { background:#dc3545; color:#fff; }
     .btn-group { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  
-    /* Improve layout when keyboard opens */
-    html, body { height: 100%; }
-    body { overflow-x: hidden; }
-    .container { min-height: 100dvh; }
-
-    /* Ensure inputs are visible above keyboard */
-    input:focus {
-      scroll-margin-bottom: 120px; /* space for keyboard */
-    }
   </style>
 </head>
 <body>
@@ -138,38 +128,6 @@ function resetForm(){
 
 // TEST
 console.assert(getAngka('1.000')===1000);
-
-
-// === HANDLE KEYBOARD (mobile) ===
-(function(){
-  if (window.visualViewport) {
-    const vv = window.visualViewport;
-    const container = document.querySelector('.container');
-
-    function adjust() {
-      const keyboardHeight = window.innerHeight - vv.height;
-      if (keyboardHeight > 0) {
-        container.style.paddingBottom = keyboardHeight + 20 + 'px';
-      } else {
-        container.style.paddingBottom = '20px';
-      }
-    }
-
-    vv.addEventListener('resize', adjust);
-    vv.addEventListener('scroll', adjust);
-  }
-})();
-
-// Auto scroll input into view
-const inputs = document.querySelectorAll('input');
-inputs.forEach(input => {
-  input.addEventListener('focus', () => {
-    setTimeout(() => {
-      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 300);
-  });
-});
-
 </script>
 
 </body>
